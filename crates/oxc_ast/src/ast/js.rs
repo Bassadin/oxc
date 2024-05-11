@@ -1663,6 +1663,10 @@ impl<'a> VariableDeclaration<'a> {
     pub fn is_typescript_syntax(&self) -> bool {
         self.modifiers.contains(ModifierKind::Declare)
     }
+
+    pub fn has_init(&self) -> bool {
+        self.declarations.iter().any(|decl| decl.init.is_some())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
