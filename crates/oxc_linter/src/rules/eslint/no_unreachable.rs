@@ -1,8 +1,5 @@
 use oxc_ast::{ast::VariableDeclarationKind, AstKind};
-use oxc_diagnostics::{
-    miette::{self, Diagnostic},
-    thiserror::Error,
-};
+use oxc_diagnostics::OxcDiagnostic;
 use oxc_macros::declare_oxc_lint;
 use oxc_semantic::{
     petgraph::{self, graph::NodeIndex},
@@ -12,10 +9,9 @@ use oxc_span::{GetSpan, Span};
 
 use crate::{context::LintContext, rule::Rule};
 
-#[derive(Debug, Error, Diagnostic)]
-#[error("eslint(no-unreachable): Unreachable code.")]
-#[diagnostic(severity(warning))]
-struct NoUnreachableDiagnostic(#[label] pub Span);
+fn no_unreachable_diagnostic(span: Span) -> OxcDiagnostic {
+    OxcDiagnostic::error("eslint(no-unreachable): Unreachable code.").with_labels([span.into()])
+}
 
 /// <https://github.com/eslint/eslint/blob/069aa680c78b8516b9a1b568519f1d01e74fb2a2/lib/rules/no-unreachable.js#L196>
 #[derive(Debug, Default, Clone)]
@@ -49,7 +45,7 @@ impl Rule for NoUnreachable {
 
         let Some(parent) = ctx.nodes().parent_node(node.id()) else { unreachable!("?") };
         if is_unreachable(ctx, node.cfg_ix(), parent.cfg_ix()) {
-            return ctx.diagnostic(NoUnreachableDiagnostic(node.kind().span()));
+            return ctx.diagnostic(no_unreachable_diagnostic(node.kind().span()));
         }
         // dbg!(node.kind().debug_name(), node.cfg_ix(), &ctx.semantic().cfg().graph);
     }
