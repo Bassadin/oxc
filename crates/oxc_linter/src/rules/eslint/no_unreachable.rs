@@ -3,7 +3,8 @@ use oxc_diagnostics::OxcDiagnostic;
 use oxc_macros::declare_oxc_lint;
 use oxc_semantic::{
     petgraph::{self, graph::NodeIndex},
-    AstNode,
+    pg::neighbors_filtered_by_edge_weight,
+    AstNode, EdgeType,
 };
 use oxc_span::{GetSpan, Span};
 
@@ -51,13 +52,34 @@ impl Rule for NoUnreachable {
     }
 }
 
-fn is_unreachable(ctx: &LintContext, node_cfg_ix: NodeIndex, parent_cfg_ix: NodeIndex) -> bool {
-    !petgraph::algo::has_path_connecting(
-        &ctx.semantic().cfg().graph,
-        parent_cfg_ix,
-        node_cfg_ix,
-        None,
+fn is_unreachable(ctx: &LintContext, target_ix: NodeIndex, from_ix: NodeIndex) -> bool {
+    let msg = format!("is_unreachable {target_ix:?} from: {from_ix:?}");
+    dbg!(msg);
+    let cfg = ctx.semantic().cfg();
+    if !petgraph::algo::has_path_connecting(&cfg.graph, from_ix, target_ix, None) {
+        return true;
+    }
+
+    neighbors_filtered_by_edge_weight(
+        &cfg.graph,
+        from_ix,
+        &|e| match e {
+            EdgeType::Normal => None,
+            EdgeType::Backedge | EdgeType::NewFunction => Some(None),
+        },
+        &mut |ix: &NodeIndex, _| {
+            if target_ix == *ix {
+                return (Some(true), false);
+            }
+
+            let connected = !petgraph::algo::has_path_connecting(&cfg.graph, *ix, target_ix, None);
+            dbg!(ix, target_ix, connected);
+
+            (None, connected)
+        },
     )
+    .iter()
+    .any(|it| it.is_some_and(|val| !val))
 }
 
 #[test]
@@ -103,6 +125,7 @@ fn test() {
         "function foo() { return x; var x = 1; }",
         //[{ messageId: "unreachableCode", type: "VariableDeclaration" }]
         "function foo() { return x; var x, y = 1; }",
+        "while (true) { break; var x = 1; }",
         //[{ messageId: "unreachableCode", type: "VariableDeclaration" }]
         "while (true) { continue; var x = 1; }",
         //[{ messageId: "unreachableCode", type: "ExpressionStatement" }]
