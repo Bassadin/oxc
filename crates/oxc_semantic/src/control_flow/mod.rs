@@ -107,6 +107,33 @@ pub enum CallType {
     Import,
 }
 
+pub struct BasicBlock {
+    pub instructions: Vec<Instruction>,
+}
+
+impl BasicBlock {
+    fn new() -> Self {
+        BasicBlock { instructions: Vec::new() }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct Instruction {
+    pub kind: InstructionKind,
+    pub node: Option<AstNodeId>,
+}
+
+#[derive(Debug, Clone)]
+pub enum InstructionKind {
+    Statement,
+    Jump {
+        conditional: bool,
+        block: BasicBlockId,
+    },
+    Return,
+    Throw,
+}
+
 #[derive(Debug, Clone)]
 pub enum BasicBlockElement {
     Unreachable,
