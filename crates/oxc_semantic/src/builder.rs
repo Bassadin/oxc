@@ -17,7 +17,8 @@ use crate::{
     checker::{EarlyErrorJavaScript, EarlyErrorTypeScript},
     class::ClassTableBuilder,
     control_flow::{
-        AssignmentValue, ControlFlowGraphBuilder, EdgeType, Register, StatementControlFlowType,
+        ControlFlowGraphBuilder, EdgeType, Instruction, InstructionKind, Register,
+        StatementControlFlowType,
     },
     diagnostics::redeclaration,
     jsdoc::JSDocBuilder,
@@ -497,11 +498,6 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         let statement_state = self
             .cfg
             .before_statement(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
-        let break_label = maybe_label.and_then(|_| {
-            let reg = Some(self.cfg.new_register());
-            self.cfg.use_this_register = reg;
-            reg
-        });
         /* cfg */
 
         if let Some(break_target) = maybe_label {
@@ -535,7 +531,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         }
         self.cfg.put_unreachable();
 
-        self.cfg.put_break(break_label);
+        self.cfg.put_break(Some(self.current_node_id));
         self.cfg.after_statement(
             &statement_state,
             self.current_node_id,
@@ -1138,26 +1134,20 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
     fn visit_return_statement(&mut self, stmt: &ReturnStatement<'a>) {
         let kind = AstKind::ReturnStatement(self.alloc(stmt));
         self.enter_node(kind);
+        let node_id = self.current_node_id;
 
         /* cfg */
         let statement_state = self
             .cfg
             .before_statement(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
-
-        // returning something is an assignment to the return register
-        self.cfg.use_this_register = Some(Register::Return);
         /* cfg */
 
         if let Some(arg) = &stmt.argument {
             self.visit_expression(arg);
-            /* cfg */
-            self.cfg.put_x_in_register(AssignmentValue::NotImplicitUndefined);
-            /* cfg */
         }
-        /* cfg - put implicit undefined as return arg  */
-        else {
-            self.cfg.put_undefined();
-        }
+
+        /* cfg */
+        self.cfg.push_instruction(Instruction::new(InstructionKind::Return, Some(node_id)));
         /* cfg */
 
         /* cfg - put unreachable after return */
@@ -1284,15 +1274,13 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         let statement_state = self
             .cfg
             .before_statement(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
-        let throw_expr = self.cfg.new_register();
-        self.cfg.use_this_register = Some(throw_expr);
         /* cfg */
 
         self.visit_expression(&stmt.argument);
         // todo - put unreachable after throw statement
 
         /* cfg */
-        self.cfg.put_throw(throw_expr);
+        self.cfg.put_throw(self.current_node_id);
         self.cfg.after_statement(
             &statement_state,
             self.current_node_id,

@@ -107,6 +107,7 @@ pub enum CallType {
     Import,
 }
 
+#[derive(Debug)]
 pub struct BasicBlock {
     pub instructions: Vec<Instruction>,
 }
@@ -120,16 +121,20 @@ impl BasicBlock {
 #[derive(Debug, Clone)]
 pub struct Instruction {
     pub kind: InstructionKind,
-    pub node: Option<AstNodeId>,
+    pub node_id: Option<AstNodeId>,
+}
+
+impl Instruction {
+    pub fn new(kind: InstructionKind, node_id: Option<AstNodeId>) -> Self {
+        Self { kind, node_id }
+    }
 }
 
 #[derive(Debug, Clone)]
 pub enum InstructionKind {
+    Unreachable,
     Statement,
-    Jump {
-        conditional: bool,
-        block: BasicBlockId,
-    },
+    Jump { conditional: bool, block: BasicBlockId },
     Return,
     Throw,
 }
@@ -152,18 +157,18 @@ pub enum EdgeType {
 #[derive(Debug)]
 pub struct ControlFlowGraph {
     pub graph: Graph<usize, EdgeType>,
-    pub basic_blocks: Vec<Vec<BasicBlockElement>>,
+    pub basic_blocks: Vec<BasicBlock>,
 }
 
 impl ControlFlowGraph {
     /// # Panics
-    pub fn basic_block(&self, id: BasicBlockId) -> &Vec<BasicBlockElement> {
+    pub fn basic_block(&self, id: BasicBlockId) -> &BasicBlock {
         let ix = *self.graph.node_weight(id).expect("expected a valid node id in self.graph");
         self.basic_blocks.get(ix).expect("expected a valid node id in self.basic_blocks")
     }
 
     /// # Panics
-    pub fn basic_block_mut(&mut self, id: BasicBlockId) -> &mut Vec<BasicBlockElement> {
+    pub fn basic_block_mut(&mut self, id: BasicBlockId) -> &mut BasicBlock {
         let ix = *self.graph.node_weight(id).expect("expected a valid node id in self.graph");
         self.basic_blocks.get_mut(ix).expect("expected a valid node id in self.basic_blocks")
     }

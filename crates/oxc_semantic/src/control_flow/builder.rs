@@ -1,13 +1,13 @@
 use super::{
-    AssignmentValue, AstNodeId, BasicBlockElement, BasicBlockId, CompactStr, ControlFlowGraph,
-    EdgeType, Graph, PreservedExpressionState, PreservedStatementState, Register,
-    StatementControlFlowType,
+    AstNodeId, BasicBlock, BasicBlockElement, BasicBlockId, CompactStr, ControlFlowGraph, EdgeType,
+    Graph, Instruction, InstructionKind, PreservedExpressionState, PreservedStatementState,
+    Register, StatementControlFlowType,
 };
 
 #[derive(Debug, Default)]
 pub struct ControlFlowGraphBuilder {
     pub graph: Graph<usize, EdgeType>,
-    pub basic_blocks: Vec<Vec<BasicBlockElement>>,
+    pub basic_blocks: Vec<BasicBlock>,
     pub current_node_ix: BasicBlockId,
     // note: this should only land in the big box for all things that take arguments
     // ie: callexpression, arrayexpression, etc
@@ -40,7 +40,7 @@ impl ControlFlowGraphBuilder {
     }
 
     /// # Panics
-    pub fn current_basic_block(&mut self) -> &mut Vec<BasicBlockElement> {
+    pub fn current_basic_block(&mut self) -> &mut BasicBlock {
         let idx = *self
             .graph
             .node_weight(self.current_node_ix)
@@ -52,7 +52,7 @@ impl ControlFlowGraphBuilder {
 
     #[must_use]
     pub fn new_basic_block_for_function(&mut self) -> BasicBlockId {
-        self.basic_blocks.push(Vec::new());
+        self.basic_blocks.push(BasicBlock::new());
         let basic_block_id = self.basic_blocks.len() - 1;
         let graph_index = self.graph.add_node(basic_block_id);
         self.current_node_ix = graph_index;
@@ -67,7 +67,7 @@ impl ControlFlowGraphBuilder {
 
     #[must_use]
     pub fn new_basic_block(&mut self) -> BasicBlockId {
-        self.basic_blocks.push(Vec::new());
+        self.basic_blocks.push(BasicBlock::new());
         let graph_index = self.graph.add_node(self.basic_blocks.len() - 1);
         self.current_node_ix = graph_index;
 
@@ -90,49 +90,28 @@ impl ControlFlowGraphBuilder {
         register
     }
 
-    /// # Panics
-    pub fn put_x_in_register(&mut self, asmt_value: AssignmentValue) {
-        let register = self.use_this_register.take().unwrap_or_else(|| self.new_register());
-
-        let basic_block_element = BasicBlockElement::Assignment(register, asmt_value);
-
-        if self.should_save_stores_for_patching {
-            let saved_store = &mut self.saved_stores[self.saved_store.expect(
-                "there must be at least one saved store if should_save_stores_for_patching is true",
-            )];
-
-            saved_store.0.push(basic_block_element);
-            saved_store.1 = Some(register);
-        } else {
-            self.current_basic_block().push(basic_block_element);
-        }
-        // used for storing the object base for MemberExpressions
-        if let Some(arr) = self.store_assignments_into_this_array.last_mut() {
-            arr.push(register);
-        }
-
-        if let Some(arr) = self.store_final_assignments_into_this_array.last_mut() {
-            arr.push(register);
-        }
+    pub fn push_instruction(&mut self, instruction: Instruction) {
+        self.current_basic_block().instructions.push(instruction);
     }
 
-    pub fn put_throw(&mut self, throw_expr: Register) {
-        self.current_basic_block().push(BasicBlockElement::Throw(throw_expr));
+    pub fn put_throw(&mut self, throw_expr: AstNodeId) {
+        self.push_instruction(Instruction {
+            kind: InstructionKind::Throw,
+            node_id: Some(throw_expr),
+        });
     }
 
-    pub fn put_break(&mut self, label: Option<Register>) {
-        self.current_basic_block().push(BasicBlockElement::Break(label));
+    pub fn put_break(&mut self, label: Option<AstNodeId>) {
+        todo!("{:?}", label);
+        // self.push_instruction(Instruction { kind: InstructionKind::Break, node_id: label });
+        // self.current_basic_block().push(BasicBlockElement::Break(label));
     }
 
     pub fn put_unreachable(&mut self) {
         let current_node_ix = self.current_node_ix;
         let basic_block_with_unreachable_graph_ix = self.new_basic_block();
         self.add_edge(current_node_ix, basic_block_with_unreachable_graph_ix, EdgeType::Normal);
-        self.current_basic_block().push(BasicBlockElement::Unreachable);
-    }
-
-    pub fn put_undefined(&mut self) {
-        self.put_x_in_register(AssignmentValue::ImplicitUndefined);
+        self.push_instruction(Instruction { kind: InstructionKind::Unreachable, node_id: None });
     }
 
     #[must_use]
