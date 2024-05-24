@@ -12,7 +12,7 @@ bb1: {
 }
 
 bb2: {
-	$return = <value>
+	return <value>
 }
 
 bb3: {
@@ -29,7 +29,7 @@ bb5: {
 
 bb6: {
 	Unreachable()
-	break $0
+	break
 }
 
 bb7: {
@@ -42,11 +42,11 @@ bb8: {
 
 bb9: {
 	Unreachable()
-	break $1
+	break
 }
 
 bb10: {
-	$return = <value>
+	return <value>
 }
 
 bb11: {

@@ -18,7 +18,7 @@ use crate::{
     class::ClassTableBuilder,
     control_flow::{
         ControlFlowGraphBuilder, EdgeType, Instruction, InstructionKind, Register,
-        StatementControlFlowType,
+        ReturnInstructionKind, StatementControlFlowType,
     },
     diagnostics::redeclaration,
     jsdoc::JSDocBuilder,
@@ -1144,11 +1144,20 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
 
         if let Some(arg) = &stmt.argument {
             self.visit_expression(arg);
+            /* cfg */
+            self.cfg.push_instruction(Instruction::new(
+                InstructionKind::Return(ReturnInstructionKind::NotImplicitUndefined),
+                Some(node_id),
+            ));
+        /* cfg */
+        } else {
+            /* cfg */
+            self.cfg.push_instruction(Instruction::new(
+                InstructionKind::Return(ReturnInstructionKind::ImplicitUndefined),
+                Some(node_id),
+            ));
+            /* cfg */
         }
-
-        /* cfg */
-        self.cfg.push_instruction(Instruction::new(InstructionKind::Return, Some(node_id)));
-        /* cfg */
 
         /* cfg - put unreachable after return */
         let _ = self.cfg.new_basic_block();

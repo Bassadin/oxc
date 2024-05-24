@@ -8,7 +8,7 @@ bb0: {
 }
 
 bb1: {
-	$return = <value>
+	return <value>
 }
 
 bb2: {
@@ -24,7 +24,7 @@ bb4: {
 }
 
 bb5: {
-	$return = <value>
+	return <value>
 }
 
 bb6: {

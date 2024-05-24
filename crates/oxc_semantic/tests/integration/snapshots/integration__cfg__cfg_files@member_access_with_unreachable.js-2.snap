@@ -5,9 +5,9 @@ input_file: crates/oxc_semantic/tests/integration/cfg_fixtures/member_access_wit
 ---
 digraph {
     0 [ label = ""]
-    1 [ label = "$return = <value>"]
+    1 [ label = "return <value>"]
     2 [ label = ""]
-    3 [ label = "Unreachable()\n$return = <value>"]
+    3 [ label = "Unreachable()\nreturn <value>"]
     4 [ label = ""]
     5 [ label = "Unreachable()"]
     6 [ label = ""]

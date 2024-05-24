@@ -102,8 +102,8 @@ impl ControlFlowGraphBuilder {
     }
 
     pub fn put_break(&mut self, label: Option<AstNodeId>) {
-        todo!("{:?}", label);
-        // self.push_instruction(Instruction { kind: InstructionKind::Break, node_id: label });
+        self.push_instruction(Instruction { kind: InstructionKind::Break, node_id: label });
+        // todo!("{:?}", label);
         // self.current_basic_block().push(BasicBlockElement::Break(label));
     }
 

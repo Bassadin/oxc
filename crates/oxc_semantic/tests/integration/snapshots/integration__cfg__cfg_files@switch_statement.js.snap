@@ -50,7 +50,7 @@ bb10: {
 }
 
 bb11: {
-	$return = <value>
+	return <value>
 }
 
 bb12: {
@@ -74,7 +74,7 @@ bb16: {
 }
 
 bb17: {
-	$return = <value>
+	return <value>
 }
 
 bb18: {
@@ -83,7 +83,7 @@ bb18: {
 
 bb19: {
 	Unreachable()
-	$return = <value>
+	return <value>
 }
 
 bb20: {

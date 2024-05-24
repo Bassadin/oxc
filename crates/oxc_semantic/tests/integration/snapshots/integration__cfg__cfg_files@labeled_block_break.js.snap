@@ -21,7 +21,7 @@ bb3: {
 
 bb4: {
 	Unreachable()
-	break $0
+	break
 }
 
 bb5: {

@@ -3,7 +3,7 @@ use oxc_diagnostics::OxcDiagnostic;
 
 use oxc_macros::declare_oxc_lint;
 use oxc_semantic::{
-    pg::neighbors_filtered_by_edge_weight, AssignmentValue, BasicBlockElement, EdgeType, Register,
+    pg::neighbors_filtered_by_edge_weight, EdgeType, InstructionKind, ReturnInstructionKind,
 };
 use oxc_span::{GetSpan, Span};
 

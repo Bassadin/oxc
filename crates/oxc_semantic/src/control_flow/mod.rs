@@ -116,6 +116,10 @@ impl BasicBlock {
     fn new() -> Self {
         BasicBlock { instructions: Vec::new() }
     }
+
+    pub fn instructions(&self) -> &Vec<Instruction> {
+        &self.instructions
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -135,8 +139,15 @@ pub enum InstructionKind {
     Unreachable,
     Statement,
     Jump { conditional: bool, block: BasicBlockId },
-    Return,
+    Return(ReturnInstructionKind),
     Throw,
+    Break,
+}
+
+#[derive(Debug, Clone)]
+pub enum ReturnInstructionKind {
+    ImplicitUndefined,
+    NotImplicitUndefined,
 }
 
 #[derive(Debug, Clone)]
@@ -189,40 +200,23 @@ pub struct PreservedExpressionState {
 }
 
 #[must_use]
-fn print_register(register: Register) -> String {
-    match &register {
-        Register::Index(i) => format!("${i}"),
-        Register::Return => "$return".into(),
-    }
-}
-
-#[must_use]
-pub fn print_basic_block(basic_block_elements: &Vec<BasicBlockElement>) -> String {
+pub fn print_basic_block(basic_block: &BasicBlock) -> String {
     let mut output = String::new();
-    for basic_block in basic_block_elements {
-        match basic_block {
-            BasicBlockElement::Unreachable => output.push_str("Unreachable()\n"),
-            BasicBlockElement::Throw(reg) => {
-                output.push_str(&format!("throw {}\n", print_register(*reg)));
+    for instruction in basic_block.instructions() {
+        match instruction.kind {
+            InstructionKind::Statement => output.push_str("statement\n"),
+            InstructionKind::Unreachable => output.push_str("Unreachable()\n"),
+            InstructionKind::Throw => output.push_str("throw\n"),
+            InstructionKind::Break => output.push_str("break\n"),
+            InstructionKind::Return(ReturnInstructionKind::ImplicitUndefined) => {
+                output.push_str("return <implicit undefined>\n");
             }
-
-            BasicBlockElement::Break(Some(reg)) => {
-                output.push_str(&format!("break {}\n", print_register(*reg)));
+            InstructionKind::Return(ReturnInstructionKind::NotImplicitUndefined) => {
+                output.push_str("return <value>\n");
             }
-            BasicBlockElement::Break(None) => {
-                output.push_str("break");
-            }
-            BasicBlockElement::Assignment(to, with) => {
-                output.push_str(&format!("{} = ", print_register(*to)));
-
-                match with {
-                    AssignmentValue::ImplicitUndefined => {
-                        output.push_str("<implicit undefined>");
-                    }
-                    AssignmentValue::NotImplicitUndefined => output.push_str("<value>"),
-                }
-
-                output.push('\n');
+            #[allow(clippy::todo)]
+            InstructionKind::Jump { .. } => {
+                todo!("We haven't switched to use jumps yet");
             }
         }
     }

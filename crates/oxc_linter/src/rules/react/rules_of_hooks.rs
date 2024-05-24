@@ -7,7 +7,7 @@ use oxc_macros::declare_oxc_lint;
 use oxc_semantic::{
     petgraph::{self},
     pg::neighbors_filtered_by_edge_weight,
-    AstNodeId, AstNodes, BasicBlockElement, BasicBlockId, EdgeType, Register,
+    AstNodeId, AstNodes, BasicBlockId, EdgeType, Instruction, InstructionKind,
 };
 use oxc_span::{Atom, CompactStr};
 use oxc_syntax::operator::AssignmentOperator;
@@ -314,15 +314,16 @@ impl RulesOfHooks {
 
                 let (push, keep_walking) = cfg
                     .basic_block(*id)
+                    .instructions
                     .iter()
-                    .fold_while((false, true), |acc, it| match it {
-                        BasicBlockElement::Break(_) => FoldWhile::Done((true, false)),
-                        BasicBlockElement::Unreachable
-                        | BasicBlockElement::Throw(_)
-                        | BasicBlockElement::Assignment(Register::Return, _) => {
-                            FoldWhile::Continue((acc.0, false))
+                    .fold_while((false, true), |acc, Instruction { kind, .. }| match kind {
+                        InstructionKind::Break => FoldWhile::Done((true, false)),
+                        InstructionKind::Unreachable
+                        | InstructionKind::Throw
+                        | InstructionKind::Return(_) => FoldWhile::Continue((acc.0, false)),
+                        InstructionKind::Jump { .. } | InstructionKind::Statement => {
+                            FoldWhile::Continue(acc)
                         }
-                        BasicBlockElement::Assignment(_, _) => FoldWhile::Continue(acc),
                     })
                     .into_inner();
 
