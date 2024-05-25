@@ -14,7 +14,7 @@ digraph {
     7 [ label = "return <value>"]
     8 [ label = ""]
     9 [ label = "Unreachable()"]
-    10 [ label = "$return = <value>"]
+    10 [ label = "return <value>"]
     11 [ label = ""]
     12 [ label = "Unreachable()"]
     13 [ label = ""]

@@ -44,7 +44,7 @@ bb9: {
 }
 
 bb10: {
-	$return = <value>
+	return <value>
 }
 
 bb11: {
