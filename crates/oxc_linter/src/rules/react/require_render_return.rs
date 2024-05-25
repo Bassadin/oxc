@@ -3,7 +3,8 @@ use oxc_diagnostics::OxcDiagnostic;
 
 use oxc_macros::declare_oxc_lint;
 use oxc_semantic::{
-    pg::neighbors_filtered_by_edge_weight, EdgeType, InstructionKind, ReturnInstructionKind,
+    pg::neighbors_filtered_by_edge_weight, EdgeType, Instruction, InstructionKind,
+    ReturnInstructionKind,
 };
 use oxc_span::{GetSpan, Span};
 
@@ -109,19 +110,18 @@ fn contains_return_statement<'a>(node: &AstNode<'a>, ctx: &LintContext<'a>) -> b
                 }
             }
 
-            for entry in cfg.basic_block(*basic_block_id) {
-                match entry {
-                    BasicBlockElement::Assignment(to_reg, val) => {
-                        if matches!(to_reg, Register::Return)
-                            && matches!(val, AssignmentValue::NotImplicitUndefined)
-                        {
-                            return (FoundReturn::Yes, STOP_WALKING_ON_THIS_PATH);
-                        }
+            for Instruction { kind, .. } in cfg.basic_block(*basic_block_id).instructions() {
+                match kind {
+                    InstructionKind::Return(ReturnInstructionKind::NotImplicitUndefined) => {
+                        return (FoundReturn::Yes, STOP_WALKING_ON_THIS_PATH);
                     }
-                    BasicBlockElement::Unreachable | BasicBlockElement::Throw(_) => {
+                    InstructionKind::Unreachable | InstructionKind::Throw => {
                         return (FoundReturn::No, STOP_WALKING_ON_THIS_PATH);
                     }
-                    BasicBlockElement::Break(_) => {}
+                    InstructionKind::Return(ReturnInstructionKind::ImplicitUndefined)
+                    | InstructionKind::Break
+                    | InstructionKind::Statement
+                    | InstructionKind::Jump { .. } => {}
                 }
             }
 
