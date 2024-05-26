@@ -191,22 +191,19 @@ impl ControlFlowGraph {
     }
 
     pub fn is_reachabale(&self, from: BasicBlockId, to: BasicBlockId) -> bool {
-        println!("it {:?} reachable from {:?}", to, from);
         let graph = &self.graph;
         let mut dfs = Dfs::empty(graph);
         dfs.reset(graph);
         dfs.move_to(from);
-        let res =
-            dfs.iter(graph)
-                .take_while_inclusive(|it| {
-                    dbg!(it, self.basic_block(*it));
-                    !self.basic_block(*it).instructions().iter().any(|it| {
-                        matches!(it, Instruction { kind: InstructionKind::Unreachable, .. })
-                    })
-                })
-                .collect::<Vec<_>>();
-        dbg!(&res);
-        res.into_iter().any(|x| x == to)
+        dfs.iter(graph)
+            .take_while_inclusive(|it| {
+                !self
+                    .basic_block(*it)
+                    .instructions()
+                    .iter()
+                    .any(|it| matches!(it, Instruction { kind: InstructionKind::Unreachable, .. }))
+            })
+            .any(|x| x == to)
     }
 }
 
