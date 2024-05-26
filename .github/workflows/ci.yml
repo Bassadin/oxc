@@ -12,6 +12,7 @@ on:
   push:
     branches:
       - main
+      - ci
       - "renovate/**"
     paths-ignore:
       - '**/*.md'
@@ -58,9 +59,9 @@ jobs:
       # cache build outputs to speed up compilation
       - uses: mozilla-actions/sccache-action@v0.0.4
         if: ${{ vars.USE_SCCACHE == 'true' }}
-      - run: cargo ck
       - run: cargo test --no-run
       - run: cargo test
+      - run: cargo ck
 
   wasm:
     name: Check Wasm
