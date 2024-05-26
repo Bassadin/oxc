@@ -219,7 +219,7 @@ pub fn print_basic_block(basic_block: &BasicBlock) -> String {
     for instruction in basic_block.instructions() {
         match instruction.kind {
             InstructionKind::Statement => output.push_str("statement\n"),
-            InstructionKind::Unreachable => output.push_str("Unreachable()\n"),
+            InstructionKind::Unreachable => output.push_str("Unreachable\n"),
             InstructionKind::Throw => output.push_str("throw\n"),
             InstructionKind::Break => output.push_str("break\n"),
             InstructionKind::Return(ReturnInstructionKind::ImplicitUndefined) => {

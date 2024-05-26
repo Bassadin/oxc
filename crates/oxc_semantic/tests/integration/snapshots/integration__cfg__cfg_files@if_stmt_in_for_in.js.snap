@@ -28,7 +28,7 @@ bb5: {
 }
 
 bb6: {
-	Unreachable()
+	Unreachable
 	break
 }
 
@@ -41,11 +41,11 @@ bb8: {
 }
 
 bb9: {
-	Unreachable()
+	Unreachable
 }
 
 bb10: {
-	Unreachable()
+	Unreachable
 }
 
 bb11: {

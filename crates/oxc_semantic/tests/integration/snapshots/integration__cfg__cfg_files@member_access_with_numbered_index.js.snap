@@ -12,12 +12,12 @@ bb1: {
 }
 
 bb2: {
-	Unreachable()
+	Unreachable
 	return <value>
 }
 
 bb3: {
-	Unreachable()
+	Unreachable
 }
 
 bb4: {

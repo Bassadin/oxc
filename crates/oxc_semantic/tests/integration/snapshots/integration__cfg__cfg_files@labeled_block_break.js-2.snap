@@ -8,7 +8,7 @@ digraph {
     1 [ label = ""]
     2 [ label = ""]
     3 [ label = ""]
-    4 [ label = "Unreachable()\nbreak"]
+    4 [ label = "Unreachable\nbreak"]
     5 [ label = ""]
     6 [ label = ""]
     0 -> 1 [ ]

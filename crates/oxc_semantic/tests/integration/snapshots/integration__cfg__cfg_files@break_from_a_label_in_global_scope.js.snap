@@ -8,6 +8,6 @@ bb0: {
 }
 
 bb1: {
-	Unreachable()
+	Unreachable
 	break
 }

@@ -20,7 +20,7 @@ bb3: {
 }
 
 bb4: {
-	Unreachable()
+	Unreachable
 	break
 }
 
@@ -41,7 +41,7 @@ bb8: {
 }
 
 bb9: {
-	Unreachable()
+	Unreachable
 	break
 }
 
@@ -54,7 +54,7 @@ bb11: {
 }
 
 bb12: {
-	Unreachable()
+	Unreachable
 }
 
 bb13: {
@@ -74,12 +74,12 @@ bb16: {
 }
 
 bb17: {
-	Unreachable()
+	Unreachable
 	return <value>
 }
 
 bb18: {
-	Unreachable()
+	Unreachable
 }
 
 bb19: {

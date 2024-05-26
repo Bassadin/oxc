@@ -24,11 +24,11 @@ bb4: {
 }
 
 bb5: {
-	Unreachable()
+	Unreachable
 }
 
 bb6: {
-	Unreachable()
+	Unreachable
 }
 
 bb7: {
