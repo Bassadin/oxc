@@ -1,7 +1,7 @@
 use super::{
-    AstNodeId, BasicBlock, BasicBlockElement, BasicBlockId, CompactStr, ControlFlowGraph, EdgeType,
-    Graph, Instruction, InstructionKind, PreservedExpressionState, PreservedStatementState,
-    Register, StatementControlFlowType,
+    AstNodeId, BasicBlock, BasicBlockId, CompactStr, ControlFlowGraph, EdgeType, Graph,
+    Instruction, InstructionKind, PreservedExpressionState, PreservedStatementState, Register,
+    StatementControlFlowType,
 };
 
 #[derive(Debug, Default)]
@@ -21,8 +21,6 @@ pub struct ControlFlowGraphBuilder {
     // computed member expressions are only executed when we reach
     // that part of the chain, so we keep this vec to patch them in later
     pub should_save_stores_for_patching: bool,
-    // (start, tail, last_register_used)
-    pub saved_stores: Vec<(Vec<BasicBlockElement>, Option<Register>)>,
     pub saved_store: Option<usize>,
     pub basic_blocks_with_breaks: Vec<Vec<BasicBlockId>>,
     pub basic_blocks_with_continues: Vec<Vec<BasicBlockId>>,

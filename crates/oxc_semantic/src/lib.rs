@@ -31,9 +31,9 @@ use rustc_hash::FxHashSet;
 
 pub use crate::{
     control_flow::{
-        print_basic_block, AssignmentValue, BasicBlock, BasicBlockElement, BasicBlockId,
-        BinaryAssignmentValue, BinaryOp, CallType, CalleeWithArgumentsAssignmentValue,
-        CollectionAssignmentValue, ControlFlowGraph, EdgeType, Instruction, InstructionKind,
+        print_basic_block, AssignmentValue, BasicBlock, BasicBlockId, BinaryAssignmentValue,
+        BinaryOp, CallType, CalleeWithArgumentsAssignmentValue, CollectionAssignmentValue,
+        ControlFlowGraph, EdgeType, Instruction, InstructionKind,
         ObjectPropertyAccessAssignmentValue, Register, ReturnInstructionKind,
         UnaryExpressioneAssignmentValue, UpdateAssignmentValue,
     },

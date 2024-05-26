@@ -156,14 +156,6 @@ pub enum ReturnInstructionKind {
 }
 
 #[derive(Debug, Clone)]
-pub enum BasicBlockElement {
-    Unreachable,
-    Assignment(Register, AssignmentValue),
-    Throw(Register),
-    Break(Option<Register>),
-}
-
-#[derive(Debug, Clone)]
 pub enum EdgeType {
     Normal,
     Backedge,
