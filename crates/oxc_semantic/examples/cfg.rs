@@ -3,7 +3,7 @@ use std::{collections::HashMap, env, path::Path, sync::Arc};
 use itertools::Itertools;
 use oxc_allocator::Allocator;
 use oxc_parser::Parser;
-use oxc_semantic::{print_basic_block, SemanticBuilder};
+use oxc_semantic::{print_basic_block, EdgeType, SemanticBuilder};
 use oxc_span::SourceType;
 use petgraph::dot::{Config, Dot};
 
@@ -88,7 +88,15 @@ fn main() -> std::io::Result<()> {
         Dot::with_attr_getters(
             &semantic.semantic.cfg().graph,
             &[Config::EdgeNoLabel, Config::NodeNoLabel],
-            &|_graph, edge| format!("label = {:?}", edge.weight()),
+            &|_graph, edge| {
+                let weight = edge.weight();
+                let label = format!("label = {:?}", weight);
+                if matches!(weight, EdgeType::Unreachable) {
+                    format!("{}, style = \"dotted\"", label)
+                } else {
+                    label
+                }
+            },
             &|_graph, node| format!(
                 "xlabel = {:?}, label = {:?}",
                 format!(
