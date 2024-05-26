@@ -110,7 +110,7 @@ impl ControlFlowGraphBuilder {
     pub fn put_unreachable(&mut self) {
         let current_node_ix = self.current_node_ix;
         let basic_block_with_unreachable_graph_ix = self.new_basic_block();
-        self.add_edge(current_node_ix, basic_block_with_unreachable_graph_ix, EdgeType::Normal);
+        self.add_edge(current_node_ix, basic_block_with_unreachable_graph_ix, EdgeType::Unreachable);
         self.push_instruction(Instruction { kind: InstructionKind::Unreachable, node_id: None });
     }
 

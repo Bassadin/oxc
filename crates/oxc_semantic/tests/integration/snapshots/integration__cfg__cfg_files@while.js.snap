@@ -28,25 +28,17 @@ bb5: {
 }
 
 bb6: {
-
+	Unreachable()
 }
 
 bb7: {
-	Unreachable()
-}
-
-bb8: {
 	return <value>
 }
 
-bb9: {
-
-}
-
-bb10: {
+bb8: {
 	Unreachable()
 }
 
-bb11: {
+bb9: {
 
 }

@@ -1,10 +1,15 @@
 mod builder;
 
+use itertools::Itertools;
 use oxc_span::CompactStr;
 use oxc_syntax::operator::{
     AssignmentOperator, BinaryOperator, LogicalOperator, UnaryOperator, UpdateOperator,
 };
-use petgraph::{stable_graph::NodeIndex, Graph};
+use petgraph::{
+    stable_graph::NodeIndex,
+    visit::{Dfs, Walker},
+    Graph,
+};
 
 use crate::AstNodeId;
 
@@ -163,6 +168,7 @@ pub enum EdgeType {
     Normal,
     Backedge,
     NewFunction,
+    Unreachable,
 }
 
 #[derive(Debug)]
@@ -182,6 +188,25 @@ impl ControlFlowGraph {
     pub fn basic_block_mut(&mut self, id: BasicBlockId) -> &mut BasicBlock {
         let ix = *self.graph.node_weight(id).expect("expected a valid node id in self.graph");
         self.basic_blocks.get_mut(ix).expect("expected a valid node id in self.basic_blocks")
+    }
+
+    pub fn is_reachabale(&self, from: BasicBlockId, to: BasicBlockId) -> bool {
+        println!("it {:?} reachable from {:?}", to, from);
+        let graph = &self.graph;
+        let mut dfs = Dfs::empty(graph);
+        dfs.reset(graph);
+        dfs.move_to(from);
+        let res =
+            dfs.iter(graph)
+                .take_while_inclusive(|it| {
+                    dbg!(it, self.basic_block(*it));
+                    !self.basic_block(*it).instructions().iter().any(|it| {
+                        matches!(it, Instruction { kind: InstructionKind::Unreachable, .. })
+                    })
+                })
+                .collect::<Vec<_>>();
+        dbg!(&res);
+        res.into_iter().any(|x| x == to)
     }
 }
 

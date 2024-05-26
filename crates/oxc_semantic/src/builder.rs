@@ -1160,7 +1160,6 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         }
 
         /* cfg - put unreachable after return */
-        let _ = self.cfg.new_basic_block();
         self.cfg.put_unreachable();
 
         self.cfg.after_statement(

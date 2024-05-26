@@ -12,22 +12,14 @@ bb1: {
 }
 
 bb2: {
-
-}
-
-bb3: {
 	Unreachable()
 	return <value>
 }
 
-bb4: {
-
-}
-
-bb5: {
+bb3: {
 	Unreachable()
 }
 
-bb6: {
+bb4: {
 
 }

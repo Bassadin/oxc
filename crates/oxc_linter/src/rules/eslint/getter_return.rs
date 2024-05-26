@@ -191,6 +191,8 @@ impl GetterReturn {
                 // We don't need to visit NewFunction edges because it's not going to be evaluated
                 // immediately, and we are only doing a pass over things that will be immediately evaluated
                 | EdgeType::NewFunction
+                // Unreachable nodes aren't reachable so we don't follow them.
+                | EdgeType::Unreachable
                 // By returning Some(X),
                 // we signal that we don't walk to this path any farther.
                 //

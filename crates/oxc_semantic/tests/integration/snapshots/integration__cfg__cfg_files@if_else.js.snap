@@ -24,19 +24,19 @@ bb4: {
 }
 
 bb5: {
-
-}
-
-bb6: {
 	Unreachable()
 }
 
-bb7: {
+bb6: {
 	return <value>
 }
 
-bb8: {
+bb7: {
+	Unreachable()
+}
 
+bb8: {
+	return <value>
 }
 
 bb9: {
@@ -44,17 +44,5 @@ bb9: {
 }
 
 bb10: {
-	return <value>
-}
-
-bb11: {
-
-}
-
-bb12: {
-	Unreachable()
-}
-
-bb13: {
 
 }
