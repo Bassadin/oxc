@@ -5,13 +5,13 @@ input_file: crates/oxc_semantic/tests/integration/cfg_fixtures/while.js
 ---
 digraph {
     0 [ label = "" ]
-    1 [ label = "statement" ]
+    1 [ label = "WhileStatement" ]
     2 [ label = "" ]
     3 [ label = "" ]
     4 [ label = "" ]
-    5 [ label = "statement\nstatement\nreturn <value>" ]
+    5 [ label = "BlockStatement\nReturnStatement\nreturn <value>" ]
     6 [ label = "unreachable" ]
-    7 [ label = "statement\nreturn <value>" ]
+    7 [ label = "ReturnStatement\nreturn <value>" ]
     8 [ label = "unreachable" ]
     9 [ label = "" ]
     0 -> 1 [ label = NewFunction ]

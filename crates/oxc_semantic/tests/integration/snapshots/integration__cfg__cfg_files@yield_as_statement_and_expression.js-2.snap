@@ -4,8 +4,8 @@ expression: output.cfg_dot_diagram()
 input_file: crates/oxc_semantic/tests/integration/cfg_fixtures/yield_as_statement_and_expression.js
 ---
 digraph {
-    0 [ label = "statement" ]
-    1 [ label = "statement\nstatement" ]
+    0 [ label = "VariableDeclaration" ]
+    1 [ label = "ExpressionStatement\nExpressionStatement" ]
     2 [ label = "" ]
     0 -> 1 [ label = NewFunction ]
     0 -> 2 [ label = Normal ]

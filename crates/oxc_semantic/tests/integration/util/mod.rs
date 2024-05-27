@@ -6,7 +6,7 @@ use std::{path::PathBuf, sync::Arc};
 use itertools::Itertools;
 use oxc_allocator::Allocator;
 use oxc_diagnostics::{Error, NamedSource, OxcDiagnostic};
-use oxc_semantic::{DisplayDot, Semantic, SemanticBuilder};
+use oxc_semantic::{DebugDot, DebugDotContext, DisplayDot, Semantic, SemanticBuilder};
 use oxc_span::SourceType;
 
 pub use class_tester::ClassTester;
@@ -122,7 +122,8 @@ impl<'a> SemanticTester<'a> {
     }
 
     pub fn cfg_dot_diagram(&self) -> String {
-        self.build().cfg().display_dot()
+        let semantic = self.build();
+        semantic.cfg().debug_dot(semantic.nodes().into())
     }
 
     /// Tests that a symbol with the given name exists at the top-level scope and provides a

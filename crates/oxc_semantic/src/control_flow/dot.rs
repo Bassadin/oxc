@@ -1,3 +1,5 @@
+use oxc_ast::AstKind;
+use oxc_syntax::node::AstNodeId;
 use petgraph::dot::{Config, Dot};
 
 use crate::{
@@ -14,8 +16,18 @@ pub trait DebugDot {
 }
 
 #[derive(Clone, Copy)]
-pub struct DebugDotContext<'a, 'b> {
-    pub nodes: &'b AstNodes<'a>,
+pub struct DebugDotContext<'a, 'b>(&'b AstNodes<'a>);
+
+impl<'a, 'b> DebugDotContext<'a, 'b> {
+    fn debug_ast_kind(&self, id: AstNodeId) -> String {
+        self.0.kind(id).debug_name().into_owned()
+    }
+}
+
+impl<'a, 'b> From<&'b AstNodes<'a>> for DebugDotContext<'a, 'b> {
+    fn from(value: &'b AstNodes<'a>) -> Self {
+        Self(value)
+    }
 }
 
 impl DisplayDot for ControlFlowGraph {
@@ -75,6 +87,31 @@ impl DisplayDot for Instruction {
     }
 }
 
+impl DebugDot for ControlFlowGraph {
+    fn debug_dot(&self, ctx: DebugDotContext) -> String {
+        format!(
+            "{:?}",
+            Dot::with_attr_getters(
+                &self.graph,
+                &[Config::EdgeNoLabel, Config::NodeNoLabel],
+                &|_graph, edge| {
+                    let weight = edge.weight();
+                    let label = format!("label = {weight:?} ");
+                    if matches!(weight, EdgeType::Unreachable) {
+                        format!("{label}, style = \"dotted\" ")
+                    } else {
+                        label
+                    }
+                },
+                &|_graph, node| format!(
+                    "label = {:?} ",
+                    self.basic_blocks[*node.1].debug_dot(ctx).trim()
+                ),
+            )
+        )
+    }
+}
+
 impl DebugDot for BasicBlock {
     fn debug_dot(&self, ctx: DebugDotContext) -> String {
         self.instructions().iter().fold(String::new(), |mut acc, it| {
@@ -86,23 +123,24 @@ impl DebugDot for BasicBlock {
 }
 
 impl DebugDot for Instruction {
-    fn debug_dot(&self, _: DebugDotContext) -> String {
+    fn debug_dot(&self, ctx: DebugDotContext) -> String {
         match self.kind {
-            InstructionKind::Statement => "statement",
-            InstructionKind::Unreachable => "unreachable",
-            InstructionKind::Throw => "throw",
-            InstructionKind::Break => "break",
+            InstructionKind::Statement => {
+                self.node_id.map_or("None".to_string(), |id| ctx.debug_ast_kind(id))
+            }
+            InstructionKind::Unreachable => "unreachable".to_string(),
+            InstructionKind::Throw => "throw".to_string(),
+            InstructionKind::Break => "break".to_string(),
             InstructionKind::Return(ReturnInstructionKind::ImplicitUndefined) => {
-                "return <implicit undefined>"
+                "return <implicit undefined>".to_string()
             }
             InstructionKind::Return(ReturnInstructionKind::NotImplicitUndefined) => {
-                "return <value>"
+                "return <value>".to_string()
             }
             #[allow(clippy::todo)]
             InstructionKind::Jump { .. } => {
                 todo!("We haven't switched to use jumps yet");
             }
         }
-        .to_string()
     }
 }

@@ -4,16 +4,16 @@ expression: output.cfg_dot_diagram()
 input_file: crates/oxc_semantic/tests/integration/cfg_fixtures/labelled_try_break.js
 ---
 digraph {
-    0 [ label = "statement" ]
-    1 [ label = "statement\nstatement" ]
-    2 [ label = "statement\nstatement\nreturn <value>" ]
-    3 [ label = "statement" ]
+    0 [ label = "VariableDeclaration" ]
+    1 [ label = "LabeledStatement\nTryStatement" ]
+    2 [ label = "BlockStatement\nReturnStatement\nreturn <value>" ]
+    3 [ label = "BreakStatement" ]
     4 [ label = "unreachable" ]
     5 [ label = "unreachable\nbreak" ]
     6 [ label = "unreachable" ]
-    7 [ label = "statement" ]
+    7 [ label = "BreakStatement" ]
     8 [ label = "unreachable\nbreak" ]
-    9 [ label = "statement\nreturn <value>" ]
+    9 [ label = "ReturnStatement\nreturn <value>" ]
     10 [ label = "unreachable" ]
     11 [ label = "" ]
     0 -> 1 [ label = NewFunction ]
