@@ -31,10 +31,10 @@ use rustc_hash::FxHashSet;
 
 pub use crate::{
     control_flow::{
-        AssignmentValue, BasicBlock, BasicBlockId, BinaryAssignmentValue,
-        BinaryOp, CallType, CalleeWithArgumentsAssignmentValue, CollectionAssignmentValue,
-        ControlFlowGraph, DebugDot, DebugDotContext, DisplayDot, EdgeType, Instruction,
-        InstructionKind, ObjectPropertyAccessAssignmentValue, Register, ReturnInstructionKind,
+        AssignmentValue, BasicBlock, BasicBlockId, BinaryAssignmentValue, BinaryOp, CallType,
+        CalleeWithArgumentsAssignmentValue, CollectionAssignmentValue, ControlFlowGraph, DebugDot,
+        DebugDotContext, DisplayDot, EdgeType, Instruction, InstructionKind,
+        ObjectPropertyAccessAssignmentValue, Register, ReturnInstructionKind,
         UnaryExpressioneAssignmentValue, UpdateAssignmentValue,
     },
     node::{AstNode, AstNodeId, AstNodes},

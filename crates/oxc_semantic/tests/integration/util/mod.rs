@@ -122,7 +122,7 @@ impl<'a> SemanticTester<'a> {
     }
 
     pub fn cfg_dot_diagram(&self) -> String {
-        self.build().cfg().dot_diagram()
+        self.build().cfg().display_dot()
     }
 
     /// Tests that a symbol with the given name exists at the top-level scope and provides a
