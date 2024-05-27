@@ -4,15 +4,15 @@ expression: output.cfg_dot_diagram()
 input_file: crates/oxc_semantic/tests/integration/cfg_fixtures/switch_in_while.js
 ---
 digraph {
-    0 [ label = "" ]
+    0 [ label = "statement" ]
     1 [ label = "" ]
-    2 [ label = "" ]
+    2 [ label = "statement\nstatement" ]
     3 [ label = "" ]
-    4 [ label = "" ]
-    5 [ label = "Unreachable" ]
-    6 [ label = "Unreachable" ]
+    4 [ label = "statement\nstatement" ]
+    5 [ label = "unreachable" ]
+    6 [ label = "unreachable" ]
     7 [ label = "" ]
-    8 [ label = "" ]
+    8 [ label = "statement" ]
     9 [ label = "" ]
     3 -> 4 [ label = Normal ]
     4 -> 5 [ label = Unreachable , style = "dotted" ]

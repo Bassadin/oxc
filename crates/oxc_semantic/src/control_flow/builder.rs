@@ -88,6 +88,12 @@ impl ControlFlowGraphBuilder {
         register
     }
 
+    pub fn push_statement(&mut self, stmt: AstNodeId) {
+        self.current_basic_block()
+            .instructions
+            .push(Instruction { kind: InstructionKind::Statement, node_id: Some(stmt) });
+    }
+
     pub fn push_instruction(&mut self, instruction: Instruction) {
         self.current_basic_block().instructions.push(instruction);
     }
@@ -212,5 +218,9 @@ impl ControlFlowGraphBuilder {
             debug_assert_eq!(popped.unwrap().1, id);
             debug_assert_eq!(popped_2.unwrap().0, id);
         }
+    }
+
+    pub fn enter_statement(&mut self, stmt: AstNodeId) {
+        self.push_statement(stmt);
     }
 }

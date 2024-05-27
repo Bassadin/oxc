@@ -6,7 +6,7 @@ use std::{path::PathBuf, sync::Arc};
 use itertools::Itertools;
 use oxc_allocator::Allocator;
 use oxc_diagnostics::{Error, NamedSource, OxcDiagnostic};
-use oxc_semantic::{print_basic_block, Semantic, SemanticBuilder};
+use oxc_semantic::{DisplayDot, Semantic, SemanticBuilder};
 use oxc_span::SourceType;
 
 pub use class_tester::ClassTester;
@@ -110,7 +110,7 @@ impl<'a> SemanticTester<'a> {
             .cfg()
             .basic_blocks
             .iter()
-            .map(print_basic_block)
+            .map(DisplayDot::display_dot)
             .enumerate()
             .map(|(i, it)| {
                 format!(

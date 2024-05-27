@@ -8,11 +8,12 @@ bb0: {
 }
 
 bb1: {
+	statement
 	return <value>
 }
 
 bb2: {
-	Unreachable
+	unreachable
 }
 
 bb3: {

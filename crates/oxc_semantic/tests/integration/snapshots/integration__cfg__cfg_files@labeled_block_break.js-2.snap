@@ -4,11 +4,11 @@ expression: output.cfg_dot_diagram()
 input_file: crates/oxc_semantic/tests/integration/cfg_fixtures/labeled_block_break.js
 ---
 digraph {
-    0 [ label = "" ]
-    1 [ label = "" ]
-    2 [ label = "" ]
-    3 [ label = "" ]
-    4 [ label = "Unreachable\nbreak" ]
+    0 [ label = "statement" ]
+    1 [ label = "statement" ]
+    2 [ label = "statement\nstatement\nstatement" ]
+    3 [ label = "statement\nstatement" ]
+    4 [ label = "unreachable\nbreak" ]
     5 [ label = "" ]
     6 [ label = "" ]
     0 -> 1 [ label = Normal ]

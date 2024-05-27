@@ -5,7 +5,7 @@ input_file: crates/oxc_semantic/tests/integration/cfg_fixtures/argument_map.js
 ---
 digraph {
     0 [ label = "" ]
-    1 [ label = "" ]
+    1 [ label = "statement" ]
     2 [ label = "" ]
     0 -> 1 [ label = NewFunction ]
     0 -> 2 [ label = Normal ]

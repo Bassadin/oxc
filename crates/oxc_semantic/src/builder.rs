@@ -1800,6 +1800,12 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
 
 impl<'a> SemanticBuilder<'a> {
     fn enter_kind(&mut self, kind: AstKind<'a>) {
+        /* cfg */
+        if kind.is_statement() {
+            self.cfg.enter_statement(self.current_node_id);
+        }
+        /* cfg */
+
         match kind {
             AstKind::ExportDefaultDeclaration(_) | AstKind::ExportNamedDeclaration(_) => {
                 self.current_symbol_flags |= SymbolFlags::Export;

@@ -12,7 +12,7 @@ use petgraph::{
     Graph,
 };
 
-use crate::AstNodeId;
+use crate::{AstNodeId, AstNodes};
 
 pub use builder::ControlFlowGraphBuilder;
 
@@ -216,7 +216,7 @@ impl ControlFlowGraph {
                 },
                 &|_graph, node| format!(
                     "label = {:?} ",
-                    print_basic_block(&self.basic_blocks[*node.1],).trim()
+                    self.basic_blocks[*node.1].display_dot().trim()
                 ),
             )
         )
@@ -237,26 +237,79 @@ pub struct PreservedExpressionState {
     pub store_final_assignments_into_this_array: Vec<Vec<Register>>,
 }
 
-#[must_use]
-pub fn print_basic_block(basic_block: &BasicBlock) -> String {
-    let mut output = String::new();
-    for instruction in basic_block.instructions() {
-        match instruction.kind {
-            InstructionKind::Statement => output.push_str("statement\n"),
-            InstructionKind::Unreachable => output.push_str("Unreachable\n"),
-            InstructionKind::Throw => output.push_str("throw\n"),
-            InstructionKind::Break => output.push_str("break\n"),
+impl DisplayDot for BasicBlock {
+    fn display_dot(&self) -> String {
+        self.instructions().iter().fold(String::new(), |mut acc, it| {
+            acc.push_str(it.display_dot().as_str());
+            acc.push('\n');
+            acc
+        })
+    }
+}
+
+impl DisplayDot for Instruction {
+    fn display_dot(&self) -> String {
+        match self.kind {
+            InstructionKind::Statement => "statement",
+            InstructionKind::Unreachable => "unreachable",
+            InstructionKind::Throw => "throw",
+            InstructionKind::Break => "break",
             InstructionKind::Return(ReturnInstructionKind::ImplicitUndefined) => {
-                output.push_str("return <implicit undefined>\n");
+                "return <implicit undefined>"
             }
             InstructionKind::Return(ReturnInstructionKind::NotImplicitUndefined) => {
-                output.push_str("return <value>\n");
+                "return <value>"
             }
             #[allow(clippy::todo)]
             InstructionKind::Jump { .. } => {
                 todo!("We haven't switched to use jumps yet");
             }
         }
+        .to_string()
     }
-    output
+}
+
+impl DebugDot for BasicBlock {
+    fn debug_dot(&self, ctx: DebugDotContext) -> String {
+        self.instructions().iter().fold(String::new(), |mut acc, it| {
+            acc.push_str(it.debug_dot(ctx).as_str());
+            acc.push('\n');
+            acc
+        })
+    }
+}
+
+impl DebugDot for Instruction {
+    fn debug_dot(&self, _: DebugDotContext) -> String {
+        match self.kind {
+            InstructionKind::Statement => "statement",
+            InstructionKind::Unreachable => "unreachable",
+            InstructionKind::Throw => "throw",
+            InstructionKind::Break => "break",
+            InstructionKind::Return(ReturnInstructionKind::ImplicitUndefined) => {
+                "return <implicit undefined>"
+            }
+            InstructionKind::Return(ReturnInstructionKind::NotImplicitUndefined) => {
+                "return <value>"
+            }
+            #[allow(clippy::todo)]
+            InstructionKind::Jump { .. } => {
+                todo!("We haven't switched to use jumps yet");
+            }
+        }
+        .to_string()
+    }
+}
+
+pub trait DisplayDot {
+    fn display_dot(&self) -> String;
+}
+
+pub trait DebugDot {
+    fn debug_dot(&self, ctx: DebugDotContext) -> String;
+}
+
+#[derive(Clone, Copy)]
+pub struct DebugDotContext<'a, 'b> {
+    pub nodes: &'b AstNodes<'a>,
 }

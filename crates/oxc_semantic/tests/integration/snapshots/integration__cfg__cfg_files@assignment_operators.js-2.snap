@@ -4,13 +4,13 @@ expression: output.cfg_dot_diagram()
 input_file: crates/oxc_semantic/tests/integration/cfg_fixtures/assignment_operators.js
 ---
 digraph {
-    0 [ label = "" ]
+    0 [ label = "statement" ]
     1 [ label = "" ]
-    2 [ label = "" ]
+    2 [ label = "statement" ]
     3 [ label = "" ]
-    4 [ label = "" ]
+    4 [ label = "statement" ]
     5 [ label = "" ]
-    6 [ label = "" ]
+    6 [ label = "statement\nstatement" ]
     0 -> 1 [ label = Normal ]
     0 -> 2 [ label = Normal ]
     1 -> 2 [ label = Normal ]

@@ -3,7 +3,7 @@ use std::{collections::HashMap, env, path::Path, sync::Arc};
 use itertools::Itertools;
 use oxc_allocator::Allocator;
 use oxc_parser::Parser;
-use oxc_semantic::{print_basic_block, EdgeType, SemanticBuilder};
+use oxc_semantic::{DisplayDot, EdgeType, SemanticBuilder};
 use oxc_span::SourceType;
 use petgraph::dot::{Config, Dot};
 
@@ -64,7 +64,7 @@ fn main() -> std::io::Result<()> {
         .cfg()
         .basic_blocks
         .iter()
-        .map(print_basic_block)
+        .map(DisplayDot::display_dot)
         .enumerate()
         .map(|(i, it)| {
             format!(
@@ -102,7 +102,7 @@ fn main() -> std::io::Result<()> {
                 format!(
                     "bb{} [{}]",
                     node.1,
-                    print_basic_block(&semantic.semantic.cfg().basic_blocks[*node.1],).trim()
+                    semantic.semantic.cfg().basic_blocks[*node.1].display_dot().trim()
                 ),
                 ast_nodes_by_block
                     .get(node.1)

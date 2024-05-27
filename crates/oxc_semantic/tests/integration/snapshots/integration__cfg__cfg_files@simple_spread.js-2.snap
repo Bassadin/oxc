@@ -5,8 +5,8 @@ input_file: crates/oxc_semantic/tests/integration/cfg_fixtures/simple_spread.js
 ---
 digraph {
     0 [ label = "" ]
-    1 [ label = "return <value>" ]
-    2 [ label = "Unreachable" ]
+    1 [ label = "statement\nreturn <value>" ]
+    2 [ label = "unreachable" ]
     3 [ label = "" ]
     0 -> 1 [ label = NewFunction ]
     1 -> 2 [ label = Unreachable , style = "dotted" ]
