@@ -11,7 +11,6 @@ use oxc_span::SourceType;
 
 pub use class_tester::ClassTester;
 pub use expect::Expect;
-use petgraph::dot::{Config, Dot};
 pub use symbol_tester::SymbolTester;
 
 pub struct SemanticTester<'a> {
@@ -123,22 +122,7 @@ impl<'a> SemanticTester<'a> {
     }
 
     pub fn cfg_dot_diagram(&self) -> String {
-        let built = self.build();
-        format!(
-            "{:?}",
-            Dot::with_attr_getters(
-                &built.cfg().graph,
-                &[Config::EdgeNoLabel, Config::NodeNoLabel],
-                &|_graph, _edge| String::new(),
-                // todo: We currently do not print edge types into cfg dot diagram
-                // so they aren't snapshotted, but we could by uncommenting this.
-                // &|_graph, edge| format!("label = {:?}", edge.weight()),
-                &|_graph, node| format!(
-                    "label = {:?}",
-                    print_basic_block(&built.cfg().basic_blocks[*node.1],).trim()
-                )
-            )
-        )
+        self.build().cfg().dot_diagram()
     }
 
     /// Tests that a symbol with the given name exists at the top-level scope and provides a

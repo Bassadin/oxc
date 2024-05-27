@@ -6,6 +6,7 @@ use oxc_syntax::operator::{
     AssignmentOperator, BinaryOperator, LogicalOperator, UnaryOperator, UpdateOperator,
 };
 use petgraph::{
+    dot::{Config, Dot},
     stable_graph::NodeIndex,
     visit::{Dfs, Walker},
     Graph,
@@ -196,6 +197,29 @@ impl ControlFlowGraph {
                     .any(|it| matches!(it, Instruction { kind: InstructionKind::Unreachable, .. }))
             })
             .any(|x| x == to)
+    }
+
+    pub fn dot_diagram(&self) -> String {
+        format!(
+            "{:?}",
+            Dot::with_attr_getters(
+                &self.graph,
+                &[Config::EdgeNoLabel, Config::NodeNoLabel],
+                &|_graph, edge| {
+                    let weight = edge.weight();
+                    let label = format!("label = {weight:?} ");
+                    if matches!(weight, EdgeType::Unreachable) {
+                        format!("{label}, style = \"dotted\" ")
+                    } else {
+                        label
+                    }
+                },
+                &|_graph, node| format!(
+                    "label = {:?} ",
+                    print_basic_block(&self.basic_blocks[*node.1],).trim()
+                ),
+            )
+        )
     }
 }
 
