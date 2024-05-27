@@ -471,13 +471,13 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         /* cfg */
         let statement_state = self
             .cfg
-            .before_statement(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
+            .preserve_state(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
         /* cfg */
 
         self.visit_statements(&stmt.body);
 
         /* cfg */
-        self.cfg.after_statement(
+        self.cfg.restore_state(
             &statement_state,
             self.current_node_id,
             self.cfg.current_node_ix,
@@ -497,7 +497,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         /* cfg */
         let statement_state = self
             .cfg
-            .before_statement(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
+            .preserve_state(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
         /* cfg */
 
         if let Some(break_target) = maybe_label {
@@ -532,7 +532,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         self.cfg.put_unreachable();
 
         self.cfg.put_break(Some(self.current_node_id));
-        self.cfg.after_statement(
+        self.cfg.restore_state(
             &statement_state,
             self.current_node_id,
             self.cfg.current_node_ix,
@@ -550,7 +550,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         /* cfg */
         let statement_state = self
             .cfg
-            .before_statement(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
+            .preserve_state(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
         /* cfg */
 
         if let Some(continue_target) = &stmt.label {
@@ -603,7 +603,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         }
         self.cfg.put_unreachable();
 
-        self.cfg.after_statement(
+        self.cfg.restore_state(
             &statement_state,
             self.current_node_id,
             self.cfg.current_node_ix,
@@ -635,7 +635,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         let before_do_while_stmt_graph_ix = self.cfg.current_node_ix;
         let start_body_graph_ix = self.cfg.new_basic_block();
         let statement_state =
-            self.cfg.before_statement(self.current_node_id, StatementControlFlowType::UsesContinue);
+            self.cfg.preserve_state(self.current_node_id, StatementControlFlowType::UsesContinue);
         /* cfg */
 
         self.visit_statement(&stmt.body);
@@ -664,7 +664,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         // end of condition to after start of body
         self.cfg.add_edge(end_of_condition_graph_ix, start_body_graph_ix, EdgeType::Normal);
 
-        self.cfg.after_statement(
+        self.cfg.restore_state(
             &statement_state,
             self.current_node_id,
             // all basic blocks are break here so we connect them to the
@@ -686,13 +686,13 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         /* cfg */
         let statement_state = self
             .cfg
-            .before_statement(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
+            .preserve_state(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
         /* cfg */
 
         self.visit_expression(&stmt.expression);
 
         /* cfg */
-        self.cfg.after_statement(
+        self.cfg.restore_state(
             &statement_state,
             self.current_node_id,
             self.cfg.current_node_ix,
@@ -849,7 +849,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         /* cfg */
         let body_graph_ix = self.cfg.new_basic_block();
         let statement_state =
-            self.cfg.before_statement(self.current_node_id, StatementControlFlowType::UsesContinue);
+            self.cfg.preserve_state(self.current_node_id, StatementControlFlowType::UsesContinue);
         /* cfg */
 
         self.visit_statement(&stmt.body);
@@ -862,7 +862,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         self.cfg.add_edge(update_graph_ix, test_graph_ix, EdgeType::Backedge);
         self.cfg.add_edge(after_test_graph_ix, after_for_stmt, EdgeType::Normal);
 
-        self.cfg.after_statement(
+        self.cfg.restore_state(
             &statement_state,
             self.current_node_id,
             // all basic blocks are break here so we connect them to the
@@ -918,7 +918,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         let basic_block_with_backedge_graph_ix = self.cfg.new_basic_block();
         let body_graph_ix = self.cfg.new_basic_block();
         let statement_state =
-            self.cfg.before_statement(self.current_node_id, StatementControlFlowType::UsesContinue);
+            self.cfg.preserve_state(self.current_node_id, StatementControlFlowType::UsesContinue);
         /* cfg */
 
         self.visit_statement(&stmt.body);
@@ -947,7 +947,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         // for when there are no more iterations left in the iterable
         self.cfg.add_edge(basic_block_with_backedge_graph_ix, after_for_graph_ix, EdgeType::Normal);
 
-        self.cfg.after_statement(
+        self.cfg.restore_state(
             &statement_state,
             self.current_node_id,
             // all basic blocks are break here so we connect them to the
@@ -988,7 +988,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         let basic_block_with_backedge_graph_ix = self.cfg.new_basic_block();
         let body_graph_ix = self.cfg.new_basic_block();
         let statement_state =
-            self.cfg.before_statement(self.current_node_id, StatementControlFlowType::UsesContinue);
+            self.cfg.preserve_state(self.current_node_id, StatementControlFlowType::UsesContinue);
         /* cfg */
 
         self.visit_statement(&stmt.body);
@@ -1017,7 +1017,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         // for when there are no more iterations left in the iterable
         self.cfg.add_edge(basic_block_with_backedge_graph_ix, after_for_graph_ix, EdgeType::Normal);
 
-        self.cfg.after_statement(
+        self.cfg.restore_state(
             &statement_state,
             self.current_node_id,
             // all basic blocks are break here so we connect them to the
@@ -1044,7 +1044,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         /* cfg */
         let statement_state = self
             .cfg
-            .before_statement(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
+            .preserve_state(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
 
         let before_if_stmt_graph_ix = self.cfg.current_node_ix;
 
@@ -1094,7 +1094,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
             self.cfg.add_edge(before_if_stmt_graph_ix, after_if_graph_ix, EdgeType::Normal);
         }
 
-        self.cfg.after_statement(&statement_state, self.current_node_id, after_if_graph_ix, None);
+        self.cfg.restore_state(&statement_state, self.current_node_id, after_if_graph_ix, None);
         /* cfg */
 
         self.leave_node(kind);
@@ -1107,7 +1107,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         /* cfg */
         let statement_state = self
             .cfg
-            .before_statement(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
+            .preserve_state(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
         /* cfg */
 
         self.visit_label_identifier(&stmt.label);
@@ -1119,7 +1119,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         self.visit_statement(&stmt.body);
 
         /* cfg */
-        self.cfg.after_statement(
+        self.cfg.restore_state(
             &statement_state,
             self.current_node_id,
             self.cfg.current_node_ix,
@@ -1139,7 +1139,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         /* cfg */
         let statement_state = self
             .cfg
-            .before_statement(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
+            .preserve_state(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
         /* cfg */
 
         if let Some(arg) = &stmt.argument {
@@ -1162,7 +1162,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         /* cfg - put unreachable after return */
         self.cfg.put_unreachable();
 
-        self.cfg.after_statement(
+        self.cfg.restore_state(
             &statement_state,
             self.current_node_id,
             self.cfg.current_node_ix,
@@ -1185,7 +1185,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         self.cfg.switch_case_conditions.push(vec![]);
         let statement_state = self
             .cfg
-            .before_statement(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
+            .preserve_state(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
         let mut ends_of_switch_cases = vec![];
         /* cfg */
 
@@ -1233,7 +1233,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
             self.cfg.add_edge(*last, self.cfg.current_node_ix, EdgeType::Normal);
         }
 
-        self.cfg.after_statement(
+        self.cfg.restore_state(
             &statement_state,
             self.current_node_id,
             self.cfg.current_node_ix,
@@ -1281,7 +1281,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         /* cfg */
         let statement_state = self
             .cfg
-            .before_statement(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
+            .preserve_state(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
         /* cfg */
 
         self.visit_expression(&stmt.argument);
@@ -1289,7 +1289,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
 
         /* cfg */
         self.cfg.put_throw(self.current_node_id);
-        self.cfg.after_statement(
+        self.cfg.restore_state(
             &statement_state,
             self.current_node_id,
             self.cfg.current_node_ix,
@@ -1364,7 +1364,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         /* cfg */
         let statement_state = self
             .cfg
-            .before_statement(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
+            .preserve_state(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
 
         // TODO: support unwinding finally/catch blocks that aren't in this function
         // even if something throws.
@@ -1489,7 +1489,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
             EdgeType::Normal,
         );
 
-        self.cfg.after_statement(
+        self.cfg.restore_state(
             &statement_state,
             self.current_node_id,
             self.cfg.current_node_ix,
@@ -1537,7 +1537,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         /* cfg - body basic block */
         let body_graph_ix = self.cfg.new_basic_block();
         let statement_state =
-            self.cfg.before_statement(self.current_node_id, StatementControlFlowType::UsesContinue);
+            self.cfg.preserve_state(self.current_node_id, StatementControlFlowType::UsesContinue);
         /* cfg */
 
         self.visit_statement(&stmt.body);
@@ -1551,7 +1551,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         self.cfg.add_edge(body_graph_ix, condition_graph_ix, EdgeType::Backedge);
         self.cfg.add_edge(condition_graph_ix, after_body_graph_ix, EdgeType::Normal);
 
-        self.cfg.after_statement(
+        self.cfg.restore_state(
             &statement_state,
             self.current_node_id,
             // all basic blocks are break here so we connect them to the
@@ -1573,7 +1573,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         let before_with_stmt_graph_ix = self.cfg.current_node_ix;
         let statement_state = self
             .cfg
-            .before_statement(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
+            .preserve_state(self.current_node_id, StatementControlFlowType::DoesNotUseContinue);
         let condition_graph_ix = self.cfg.new_basic_block();
         /* cfg */
 
@@ -1593,7 +1593,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         self.cfg.add_edge(body_graph_ix, after_body_graph_ix, EdgeType::Normal);
         self.cfg.add_edge(condition_graph_ix, after_body_graph_ix, EdgeType::Normal);
 
-        self.cfg.after_statement(
+        self.cfg.restore_state(
             &statement_state,
             self.current_node_id,
             self.cfg.current_node_ix,

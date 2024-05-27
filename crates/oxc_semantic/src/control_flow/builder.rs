@@ -140,7 +140,7 @@ impl ControlFlowGraphBuilder {
     // note: could use type specialization rather than an enum
     #[must_use]
     #[allow(clippy::needless_pass_by_value)]
-    pub fn before_statement(
+    pub fn preserve_state(
         &mut self,
         id: AstNodeId,
         control_flow_type: StatementControlFlowType,
@@ -179,7 +179,7 @@ impl ControlFlowGraphBuilder {
     }
 
     /// # Panics
-    pub fn after_statement(
+    pub fn restore_state(
         &mut self,
         preserved_state: &PreservedStatementState,
         id: AstNodeId,
