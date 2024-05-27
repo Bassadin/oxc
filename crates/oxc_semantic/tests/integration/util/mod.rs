@@ -6,7 +6,7 @@ use std::{path::PathBuf, sync::Arc};
 use itertools::Itertools;
 use oxc_allocator::Allocator;
 use oxc_diagnostics::{Error, NamedSource, OxcDiagnostic};
-use oxc_semantic::{DebugDot, DebugDotContext, DisplayDot, Semantic, SemanticBuilder};
+use oxc_semantic::{DebugDot, DisplayDot, Semantic, SemanticBuilder};
 use oxc_span::SourceType;
 
 pub use class_tester::ClassTester;

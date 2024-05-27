@@ -1,4 +1,3 @@
-use oxc_ast::AstKind;
 use oxc_syntax::node::AstNodeId;
 use petgraph::dot::{Config, Dot};
 
@@ -19,7 +18,7 @@ pub trait DebugDot {
 pub struct DebugDotContext<'a, 'b>(&'b AstNodes<'a>);
 
 impl<'a, 'b> DebugDotContext<'a, 'b> {
-    fn debug_ast_kind(&self, id: AstNodeId) -> String {
+    fn debug_ast_kind(self, id: AstNodeId) -> String {
         self.0.kind(id).debug_name().into_owned()
     }
 }
